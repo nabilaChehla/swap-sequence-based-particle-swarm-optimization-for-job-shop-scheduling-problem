@@ -8,3 +8,9 @@
      7% 1936
   - with mutation and euclidienne and taking machines into consideration in diversity function :
   - with mutation and hamming and taking machines into consideration in diversity function :
+
+
+  changinx max MAX_ATTEMPTS :
+  100 : Makespan: 1968 | Time: 757.27s
+  changing max mutation :
+  0.8 :

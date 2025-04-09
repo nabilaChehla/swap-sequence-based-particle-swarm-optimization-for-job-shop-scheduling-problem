@@ -7,7 +7,7 @@ import math
 
 DIVERSITY_THRESHOLD = 0.1  # Threshold for diversity
 MIN_W = 0.2 # minimial number of iterations
-MAX_MUTATION = 0.8 # Maximum mutation rate
+MAX_MUTATION = 1 # Maximum mutation rate
 MAX_ATTEMPTS = 100 # Maximum attempts for mutation
 STAGNATION = 4 # Number of particles to reinitialize when stagnating
 
