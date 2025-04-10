@@ -105,8 +105,11 @@ class Particle:
             )
 
         # 1. Inertia component (keep some existing swaps)
+        r = random.random()
+        r1 = random.random()
+        r2 = random.random()
         for swap in self.velocity:
-            if random.random() < w and len(new_velocity) < self.max_velocity_size:
+            if r < w and len(new_velocity) < self.max_velocity_size:
                 i, j = swap
                 if can_add_swap(i, j):
                     new_velocity.append(swap)
@@ -115,7 +118,7 @@ class Particle:
         # 2. Cognitive component (personal best)
         for i in range(len(self.position)):
             if (
-                random.random() < c1
+                r1 < c1
                 and len(new_velocity) < self.max_velocity_size
                 and self.position[i] != self.best_position[i]
             ):
@@ -131,7 +134,7 @@ class Particle:
         # 3. Social component (global best)
         for i in range(len(self.position)):
             if (
-                random.random() < c2
+                r2 < c2
                 and len(new_velocity) < self.max_velocity_size
                 and self.position[i] != global_best_position[i]
             ):
