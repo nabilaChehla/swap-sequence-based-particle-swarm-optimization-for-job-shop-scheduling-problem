@@ -18,7 +18,9 @@ if __name__ == "__main__":
     # Create and run optimization
     jssp = JSSP(machines_matrix, times_matrix)
     optimizer = PSOOptimizer(jssp)
-    best_schedule, best_makespan = optimizer.optimize(num_particles=100, max_iter=50)
+    best_schedule, best_makespan = optimizer.optimize(
+        num_particles=50, max_iter=200, early_stopping_window=None
+    )
 
     # Display results
     print(best_schedule)
@@ -30,7 +32,7 @@ if __name__ == "__main__":
     )
     ScheduleVisualizer.plot_gantt_chart(jssp, save_folder="./test")
 
-
+"""
 from src.modules.modelisation import JSSP
 from src.modules.visualisation import ScheduleVisualizer
 from src.modules.genetic import GAOptimizer

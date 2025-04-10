@@ -106,29 +106,14 @@ class PSOOptimizer:
         job_ops = [op[1] for op in sequence if op[0] == job_id]
         return job_ops == self.jssp.job_machine_dict[job_id]
 
-    def generate_random_sequence(self) -> List[Tuple[int, int]]:
-        """Generate a completely random valid sequence."""
-        sequence = []
-        remaining_ops = deepcopy(self.jssp.job_machine_dict)
-
-        while any(ops_left for ops_left in remaining_ops.values()):
-            available_ops = []
-            for job_idx, ops_left in remaining_ops.items():
-                if ops_left:
-                    available_ops.append((job_idx, ops_left[0]))
-
-            selected = random.choice(available_ops)
-            sequence.append(selected)
-            remaining_ops[selected[0]].pop(0)
-
-        return sequence
-
-    def crossover(self, parent1: Particle, parent2: Particle) -> Particle:
+    def crossover(
+        self, parent1: Particle, parent2: Particle, seed: int = 9
+    ) -> Particle:
         """Order-based crossover for scheduling problems."""
         child_seq = []
         p1_seq = parent1.best_position
         p2_seq = parent2.best_position
-
+        random.seed(seed)  # Set the seed for reproducibility
         point = random.randint(1, len(p1_seq) - 2)
         child_seq = deepcopy(p1_seq[:point])
 
@@ -153,7 +138,10 @@ class PSOOptimizer:
         return Particle(child_seq, self.jssp.job_machine_dict)
 
     def path_relinking(
-        self, solution1: List[Tuple[int, int]], solution2: List[Tuple[int, int]]
+        self,
+        solution1: List[Tuple[int, int]],
+        solution2: List[Tuple[int, int]],
+        seed=63,
     ) -> List[Tuple[int, int]]:
         """Generate intermediate solutions between two good solutions."""
         diff_positions = [
@@ -164,6 +152,7 @@ class PSOOptimizer:
             return deepcopy(solution1)
 
         num_changes = max(1, len(diff_positions) // 3)
+        random.seed(seed)  # Set the seed for reproducibility
         positions_to_change = random.sample(diff_positions, num_changes)
 
         new_solution = deepcopy(solution1)
@@ -180,14 +169,16 @@ class PSOOptimizer:
         return new_solution
 
     def perturb_solution(
-        self, solution: List[Tuple[int, int]], num_swaps: int = 3
+        self, solution: List[Tuple[int, int]], num_swaps: int = 3, seed: int = 8
     ) -> List[Tuple[int, int]]:
         """Create a slightly modified version of the best solution."""
         perturbed = deepcopy(solution)
         swaps_applied = 0
         attempts = 0
-
+        r_i = 0
         while swaps_applied < num_swaps and attempts < MAX_ATTEMPTS:
+            r_i += 1
+            random.seed(seed * r_i)  # Set the seed for reproducibility
             i, j = random.sample(range(len(perturbed)), 2)
             if perturbed[i][0] != perturbed[j][0]:
                 perturbed[i], perturbed[j] = perturbed[j], perturbed[i]
@@ -203,7 +194,10 @@ class PSOOptimizer:
         return perturbed
 
     def handle_stagnation(
-        self, particles: List[Particle], global_best_position: List[Tuple[int, int]]
+        self,
+        particles: List[Particle],
+        global_best_position: List[Tuple[int, int]],
+        seed: int = 15,
     ):
         """Multi-level diversification strategies based on stagnation intensity."""
         stagnation_level = min(3, 1 + self.stagnation_count // 5)
@@ -218,27 +212,29 @@ class PSOOptimizer:
                 )
 
             perturbed = self.perturb_solution(
-                global_best_position, max(len(global_best_position) // 10, 1)
+                global_best_position, max(len(global_best_position) // 10, 1), seed=87
             )
             particles[-1] = Particle(perturbed, self.jssp.job_machine_dict)
 
         elif stagnation_level == 2:
             particles.sort(key=lambda p: p.best_fitness)
             for i in range(len(particles) // 2, len(particles)):
+                random.seed(seed * i)  # Set the seed for reproducibility
                 if random.random() < 0.7:
                     particles[i] = Particle(
                         self.generate_initial_sequence(), self.jssp.job_machine_dict
                     )
 
             perturbed = self.perturb_solution(
-                global_best_position, max(len(global_best_position) // 3, 2)
+                global_best_position, max(len(global_best_position) // 3, 2), seed=18
             )
+            random.seed(seed)  # Set the seed for reproducibility
             particles[random.randint(0, len(particles) - 1)] = Particle(
                 perturbed, self.jssp.job_machine_dict
             )
-
+            random.seed(seed)  # Set the seed for reproducibility
             particles[random.randint(0, len(particles) - 1)] = Particle(
-                self.generate_random_sequence(), self.jssp.job_machine_dict
+                self.generate_initial_sequence(), self.jssp.job_machine_dict
             )
 
         else:
@@ -246,6 +242,7 @@ class PSOOptimizer:
             num_to_keep = max(2, len(particles) // 10)
 
             for i in range(num_to_keep, len(particles)):
+                random.seed(seed * i)  # Set the seed for reproducibility
                 if random.random() < 0.5:
                     particles[i] = Particle(
                         self.generate_initial_sequence(), self.jssp.job_machine_dict
@@ -255,11 +252,13 @@ class PSOOptimizer:
                     parent2 = Particle(
                         self.generate_initial_sequence(), self.jssp.job_machine_dict
                     )
-                    particles[i] = self.crossover(parent1, parent2)
+                    particles[i] = self.crossover(parent1, parent2, seed=i)
 
             if num_to_keep >= 2:
                 new_solution = self.path_relinking(
-                    particles[0].best_position, particles[1].best_position
+                    particles[0].best_position,
+                    particles[1].best_position,
+                    seed=num_to_keep,
                 )
                 particles[-1] = Particle(new_solution, self.jssp.job_machine_dict)
 
@@ -285,6 +284,7 @@ class PSOOptimizer:
         # Initialize swarm
         for _ in range(num_particles):
             sequence = self.generate_initial_sequence()
+            print("init seq : ", sequence, "\n\n")
             particles.append(Particle(sequence, self.jssp.job_machine_dict))
 
         for iteration in range(max_iter):
@@ -347,16 +347,17 @@ class PSOOptimizer:
                     current_c1,
                     current_c2,
                     current_mutation,
+                    seed=iteration,
                 )
                 particle.update_position()
-                particle.apply_mutation(current_mutation)
+                particle.apply_mutation(current_mutation, seed=iteration)
 
             effective_stagnation_threshold = max(
                 5, max_stagnation * (1 - 0.5 * (iteration / max_iter))
             )
 
             if self.stagnation_count >= effective_stagnation_threshold:
-                self.handle_stagnation(particles, global_best_position)
+                self.handle_stagnation(particles, global_best_position, seed=iteration)
                 self.stagnation_count = 0
                 current_w = max(MIN_W, w * 0.8)
                 current_c1 = c1 * 1.2

@@ -94,32 +94,36 @@ class PriorityParticle:
 
 
 class PriorityParticle:
-    def __init__(self, sequence: List[Tuple[int, int]], job_machine_dict: dict[int, list[int]]):
+    def __init__(
+        self, sequence: List[Tuple[int, int]], job_machine_dict: dict[int, list[int]]
+    ):
         self.job_machine_dict = job_machine_dict
         self.sequence_length = len(sequence)
-        
+
         # Create a list of all operations in order [(job1, op0), (job1, op1), ..., (jobN, opM)]
         self.all_operations = []
         for job in sorted(job_machine_dict.keys()):
             for op in range(len(job_machine_dict[job])):
                 self.all_operations.append((job, op))
-        
+
         # Initialize with random priorities between 0 and MAX_PRIORITY
         self.position = np.random.uniform(0, MAX_PRIORITY, len(self.all_operations))
-        
+
         # Ensure operation order constraints by modifying the random priorities
         for job in job_machine_dict:
-            for op in range(1, len(job_machine_dict[job]))):
-                prev_idx = self.all_operations.index((job, op-1))
-                curr_idx = self.all_operations.index((job, op)))
+            for op in range(1, len(job_machine_dict[job])):
+                prev_idx = self.all_operations.index((job, op - 1))
+                curr_idx = self.all_operations.index((job, op))
                 # Ensure current operation has higher priority than previous
                 if self.position[curr_idx] <= self.position[prev_idx]:
-                    self.position[curr_idx] = self.position[prev_idx] + random.uniform(0.1, 1.0)
-        
+                    self.position[curr_idx] = self.position[prev_idx] + random.uniform(
+                        0.1, 1.0
+                    )
+
         self.velocity = np.random.uniform(-1, 1, len(self.position))
         self.best_position = deepcopy(self.position)
-        self.best_fitness = float('inf')
-        self.fitness = float('inf')
+        self.best_fitness = float("inf")
+        self.fitness = float("inf")
 
     def priority_to_sequence(self, priority: np.ndarray) -> List[Tuple[int, int]]:
         """Convert priorities to valid sequence while strictly preserving operation order."""
@@ -127,12 +131,12 @@ class PriorityParticle:
         ops_with_priority = []
         for idx, (job, op) in enumerate(self.all_operations):
             ops_with_priority.append((job, op, priority[idx]))
-        
+
         # Sort by priority while maintaining operation order constraints
         sorted_ops = []
         remaining_ops = ops_with_priority.copy()
         job_pointers = {job: 0 for job in self.job_machine_dict}
-        
+
         while remaining_ops:
             # Find all operations that are the next in their job sequence
             candidates = []
@@ -140,7 +144,7 @@ class PriorityParticle:
                 if job_pointers[job] < len(self.job_machine_dict[job]):
                     op_idx = job_pointers[job]
                     candidates.append((job, op_idx))
-            
+
             # From these candidates, select the one with highest priority
             if candidates:
                 # Find the actual operation in remaining_ops
@@ -150,25 +154,27 @@ class PriorityParticle:
                         if item[0] == job and item[1] == op:
                             available.append(item)
                             break
-                
+
                 if available:
                     selected = min(available, key=lambda x: x[2])
                     sorted_ops.append((selected[0], selected[1]))
                     remaining_ops.remove(selected)
                     job_pointers[selected[0]] += 1
-        
+
         return sorted_ops
 
-    def update_velocity(self, global_best_position: np.ndarray, w: float, c1: float, c2: float):
+    def update_velocity(
+        self, global_best_position: np.ndarray, w: float, c1: float, c2: float
+    ):
         """Update velocity with standard PSO formula (no constriction)"""
         r1 = random.random()
         r2 = random.random()
-        
+
         cognitive = c1 * r1 * (self.best_position - self.position)
         social = c2 * r2 * (global_best_position - self.position)
-        
+
         self.velocity = w * self.velocity + cognitive + social
-        
+
         # Velocity clamping
         max_velocity = MAX_PRIORITY * 0.1
         self.velocity = np.clip(self.velocity, -max_velocity, max_velocity)
@@ -176,12 +182,12 @@ class PriorityParticle:
     def update_position(self):
         """Update position with velocity, then enforce operation order constraints"""
         self.position = np.clip(self.position + self.velocity, 0, MAX_PRIORITY)
-        
+
         # Ensure operation order constraints are maintained
         for job in self.job_machine_dict:
-            for op in range(1, len(self.job_machine_dict[job]))):
-                prev_idx = self.all_operations.index((job, op-1))
-                curr_idx = self.all_operations.index((job, op)))
+            for op in range(1, len(self.job_machine_dict[job])):
+                prev_idx = self.all_operations.index((job, op - 1))
+                curr_idx = self.all_operations.index((job, op))
                 if self.position[curr_idx] <= self.position[prev_idx]:
                     self.position[curr_idx] = self.position[prev_idx] + 0.1
 

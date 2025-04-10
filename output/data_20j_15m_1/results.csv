@@ -2,3 +2,8 @@ Dataset,Algorithm,Best Makespan,Execution Time (s)
 data_20j_15m_1,PSO,1703,434.2729
 data_20j_15m_1,PSO,1757,237.3806
 data_20j_15m_1,PSO,1742,410.9359
+data_20j_15m_1,PSO,1747,335.3179
+data_20j_15m_1,PSO,1723,373.7127
+data_20j_15m_1,PSO,1858,95.4090
+data_20j_15m_1,PSO,1844,47.5321
+data_20j_15m_1,PSO,1844,47.9822

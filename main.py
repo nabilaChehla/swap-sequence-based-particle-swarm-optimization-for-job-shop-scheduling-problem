@@ -1,4 +1,3 @@
-"""
 import os
 from src.modules.jsspProcessor import JSSPProcessor
 
@@ -10,17 +9,19 @@ if __name__ == "__main__":
             dataset_path = os.path.join(dataset_folder, filename)
             processor = JSSPProcessor(dataset_path)
             best_schedule, best_makespan, exec_time = processor.run_pso(
-                num_particles=100,
-                max_iter=500,
-                w=0.9,
-                c1=0.8,
-                c2=0.8,
-                adaptive_params=True,
+                num_particles=50,
+                max_iter=100,
+                w=0.5,
+                c1=0.5,
+                c2=0.75,
                 mutation_rate=0.5,
                 max_stagnation=20,
                 early_stopping_window=None,
                 improvement_threshold=0.01,
             )
+
+
+""" 
 
 # Max stagnation less -> better (from 50 to 20 ) improved
 # w less -> better (from 0.8 to 0.5 ) improved
@@ -69,6 +70,8 @@ if __name__ == "__main__":
             )
 """
 
+"""
+
 import os
 from src.modules.jsspProcessor import JSSPProcessor
 
@@ -93,3 +96,5 @@ if __name__ == "__main__":
                 apply_local_search=True,
                 verbose=True,
             )
+
+"""

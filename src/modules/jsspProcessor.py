@@ -6,7 +6,7 @@ import csv
 from src.modules.modelisation import JSSP
 from src.modules.visualisation import ScheduleVisualizer
 from src.modules.genetic import GAOptimizer  # This would be your new GA optimizer class
-from src.modules.PSPO import PriorityPSOOptimizer
+from src.modules.PSPO import PriorityParticle
 
 
 class JSSPProcessor:
@@ -48,7 +48,7 @@ class JSSPProcessor:
 
         jssp = JSSP(machines, times)
 
-        optimizer = PriorityPSOOptimizer(jssp)
+        optimizer = PriorityParticle(jssp)
         start_time = time.time()
         best_schedule, best_makespan = optimizer.optimize(
             num_particles=num_particles,
