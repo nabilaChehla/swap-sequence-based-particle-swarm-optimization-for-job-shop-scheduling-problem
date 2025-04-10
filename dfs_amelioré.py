@@ -1,7 +1,7 @@
 import numpy as np  
 from copy import deepcopy  
 import time 
-from src.modules.modelisation import Operation, Job, JSSP  
+from modelisation import Operation, Job, JSSP  
 
 class JSSPSolverDFS:
     def __init__(self, jssp_instance):
