@@ -3,35 +3,37 @@ from src.modules.gridSearch import PSOGridSearch
 
 def main():
     # Configuration
-    max_iter = 2000  # Number of iterations for each PSO run
-    dataset_folder = (
-        "src/data/processed/data_20j_15m"  # Folder containing your JSSP instance files
+    dataset_file = "src/data/processed/data_20j_15m/data_20j_15m_1.txt"  # Folder containing your JSSP instance files
+    output_params = (
+        "SPSO/paramaters/best_params_grid.json"  # Output file for best parameters
     )
-    output_params = "best_params_grid_1.json"  # Output file for best parameters
-    output_history = "search_history_grid_1.csv"  # Output file for search history
+    output_history = (
+        "SPSO/paramaters/search_history_grid.csv"  # Output file for search history
+    )
 
     # Initialize and run grid search
     grid_search = PSOGridSearch(
-        max_iter=max_iter,
-        dataset_folder=dataset_folder,
+        dataset_file=dataset_file,
         params_output_file=output_params,
         history_output_file=output_history,
-        num_samples=10,  # Number of samples to take from parameter ranges
     )
 
     # Optional: Customize parameter grid if needed
     grid_search.set_parameter_grid(
         {
-            "num_particles": [20, 30, 50],  # Specific values
-            "w": (0.4, 0.9),  # Range
-            "c1": [0.5, 1, 1.5, 2],  # Fixed value
-            "c2": [0.5, 1, 1.5, 2],  # Fixed value
-            "mutation_rate": [0.1, 0.2, 0.3],  # Fixed
+            "num_particles": [20, 30, 50, 100],  # Specific values
+            "max_iter": [100, 200, 500],
+            "w": [0.3, 0.5, 0.8, 0.9],  # Range
+            "c1": [0.5, 0.75, 1],  # Fixed value
+            "c2": [0.5, 0.75, 1],  # Fixed value
+            "mutation_rate": [1],  # Fixed
             "max_stagnation": [20],
             "early_stopping_window": [None],  # Fixed
-            "improvement_threshold": [0.005],
+            "improvement_threshold": [0.01],
         },
     )
+
+    # Optional: Customize parameter grid if needed
 
     print("Starting grid search...")
     results = grid_search.run_search()

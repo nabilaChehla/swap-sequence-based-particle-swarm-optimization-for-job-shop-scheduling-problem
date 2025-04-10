@@ -12,7 +12,7 @@ class ScheduleVisualizer:
         jssp,
         figsize=(15, 8),
         save_folder=None,
-        filename="gantt_chart.png",
+        title="Job Shop Schedule Gantt Chart",
     ):
         """Plots a Gantt chart for the JSSP schedule without job color legend."""
         fig, ax = plt.subplots(figsize=figsize)
@@ -23,7 +23,7 @@ class ScheduleVisualizer:
         ax.set_yticks(y_ticks)
         ax.set_yticklabels(y_labels)
         ax.set_xlabel("Time")
-        ax.set_title("Job Shop Schedule Gantt Chart")
+        ax.set_title(title)
         ax.grid(True, which="both", axis="x", linestyle="--", alpha=0.7)
 
         colors = plt.cm.get_cmap("tab20", jssp.num_jobs)
@@ -63,7 +63,7 @@ class ScheduleVisualizer:
         if save_folder is not None:
             # Create directory if it doesn't exist
             os.makedirs(save_folder, exist_ok=True)
-            save_path = os.path.join(save_folder, filename)
+            save_path = os.path.join(save_folder, "gantt_chart.png")
             plt.savefig(save_path, dpi=300, bbox_inches="tight")
             print(f"Plot saved to: {save_path}")
         plt.close()
@@ -74,7 +74,7 @@ class ScheduleVisualizer:
         makespan_history,
         upper_bound=None,
         save_folder=None,
-        filename="convergence_plot.png",
+        title="Makespan Improvement Over Iterations",
     ):
         """Plots the makespan improvement over iterations and optionally saves to a folder.
 
@@ -83,7 +83,7 @@ class ScheduleVisualizer:
           makespan_history: List of best makespan values at each iteration
           upper_bound: A constant value representing the upper bound to show on the plot
           save_folder: Path to folder where plot should be saved (None to not save)
-          filename: Name of the file to save (default: "convergence_plot.png")
+          title: Title for the plot
         """
         plt.figure(figsize=(10, 5))
         plt.plot(
@@ -106,14 +106,15 @@ class ScheduleVisualizer:
 
         plt.xlabel("Iteration")
         plt.ylabel("Best Makespan")
-        plt.title("Makespan Improvement Over Iterations")
+        plt.title(title)
         plt.grid(True, linestyle="--", alpha=0.7)
+        plt.legend()
         plt.tight_layout()
 
         if save_folder is not None:
             # Create directory if it doesn't exist
             os.makedirs(save_folder, exist_ok=True)
-            save_path = os.path.join(save_folder, filename)
+            save_path = os.path.join(save_folder, "convergence_plot.png")
             plt.savefig(save_path, dpi=300, bbox_inches="tight")
             print(f"Plot saved to: {save_path}")
 
