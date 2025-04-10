@@ -1,3 +1,4 @@
+"""
 import os
 from src.modules.jsspProcessor import JSSPProcessor
 
@@ -9,22 +10,22 @@ if __name__ == "__main__":
             dataset_path = os.path.join(dataset_folder, filename)
             processor = JSSPProcessor(dataset_path)
             best_schedule, best_makespan, exec_time = processor.run_pso(
-                num_particles=200,
-                max_iter=200,
-                w=0.7,
+                num_particles=100,
+                max_iter=500,
+                w=0.9,
                 c1=0.8,
-                c2=1,
+                c2=0.8,
                 adaptive_params=True,
-                mutation_rate=1,
+                mutation_rate=0.5,
                 max_stagnation=20,
                 early_stopping_window=None,
                 improvement_threshold=0.01,
             )
 
-            """
 # Max stagnation less -> better (from 50 to 20 ) improved
 # w less -> better (from 0.8 to 0.5 ) improved
 # Max stagnation less -> (from 20 to 10 ) same result
+
 
 
 good param but takes too long
@@ -66,6 +67,7 @@ if __name__ == "__main__":
                 early_stopping_window=None,
                 improvement_threshold=0.001,
             )
+"""
 
 import os
 from src.modules.jsspProcessor import JSSPProcessor
@@ -79,10 +81,10 @@ if __name__ == "__main__":
             processor = JSSPProcessor(dataset_path)
             best_schedule, best_makespan, exec_time = processor.run_priority_pso(
                 num_particles=100,
-                max_iter=1000,
+                max_iter=100,
                 w=0.9,
-                c1=2.0,
-                c2=1.8,
+                c1=1.0,
+                c2=0.8,
                 mutation_rate=0.3,
                 adaptive_params=True,
                 max_stagnation=20,
@@ -91,6 +93,3 @@ if __name__ == "__main__":
                 apply_local_search=True,
                 verbose=True,
             )
-
-            
-            """

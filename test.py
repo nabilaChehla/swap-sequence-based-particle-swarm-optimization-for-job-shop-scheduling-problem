@@ -30,7 +30,7 @@ if __name__ == "__main__":
     )
     ScheduleVisualizer.plot_gantt_chart(jssp, save_folder="./test")
 
-"""
+
 from src.modules.modelisation import JSSP
 from src.modules.visualisation import ScheduleVisualizer
 from src.modules.genetic import GAOptimizer

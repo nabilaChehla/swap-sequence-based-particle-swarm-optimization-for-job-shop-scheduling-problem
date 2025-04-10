@@ -21,8 +21,8 @@ def main():
     # Optional: Customize parameter grid if needed
     grid_search.set_parameter_grid(
         {
-            "num_particles": [20, 30, 50, 100],  # Specific values
-            "max_iter": [100, 200, 500],
+            "num_particles": [50, 100],  # Specific values
+            "max_iter": [100, 200, 500, 800],
             "w": [0.3, 0.5, 0.8, 0.9],  # Range
             "c1": [0.5, 0.75, 1],  # Fixed value
             "c2": [0.5, 0.75, 1],  # Fixed value
